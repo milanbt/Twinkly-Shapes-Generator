@@ -4,7 +4,6 @@
 #include <vector>
 #include <sstream>
 
-
 namespace patch {
   template <typename T> std::string to_string(const T& n)
   {
@@ -25,8 +24,8 @@ private:
   struct Item {
   public:
     int* attrib_ptr;
-    int MAX;
-    int MIN;
+    int MAX; // Treat as const
+    int MIN; // Treat as const
     std::string label;
     sf::Time wasIncd;
     sf::Time wasDecd;
