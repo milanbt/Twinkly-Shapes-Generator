@@ -2,6 +2,17 @@
 #include <SFML/Graphics.hpp>
 #include <cstdlib>
 #include <vector>
+#include <sstream>
+
+
+namespace patch {
+  template <typename T> std::string to_string(const T& n)
+  {
+    std::ostringstream stm;
+    stm << n;
+    return stm.str();
+  }
+}
 
 // Initialize some mutable modifiers
 int max_shapes = 10;
@@ -14,8 +25,8 @@ private:
   struct Item {
   public:
     int* attrib_ptr;
-    const int MAX;
-    const int MIN;
+    int MAX;
+    int MIN;
     std::string label;
     sf::Time wasIncd;
     sf::Time wasDecd;
@@ -118,7 +129,7 @@ void ModMenu::draw(sf::RenderWindow& window) {
     window.draw(texbuf);
 
     // Draw the value
-    texbuf.setString(std::to_string(*items[i].attrib_ptr));
+    texbuf.setString(patch::to_string(*items[i].attrib_ptr));
     rect.setSize(sf::Vector2f(texbuf.getLocalBounds().width + 8, item_h));
     rect.setFillColor(sf::Color(255, 255, 255, 244));    
     rect.setPosition(x + item_w + 14, cur_y);
