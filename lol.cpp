@@ -18,6 +18,9 @@ int max_shapes = 10;
 int size_modder = 1;
 int border_mod = 0;
 int rotation_mod = 10;
+int shape_type = -1;
+// ================================
+
 
 class ModMenu {
 private:
@@ -67,12 +70,34 @@ void ModMenu::handleInput(sf::Event& event) {
   }
   else if (event.key.code == sf::Keyboard::Left) {
     if (*(items[hilit_index].attrib_ptr) > items[hilit_index].MIN) {
+
+      /* Somehow causes segfault
+
+      if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) || sf::Keyboard::isKeyPressed(sf::Keyboard::RShift)) {
+	if(*(items[hilit_index].attrib_ptr) - 10 <= items[hilit_index].MIN) {
+	  *(items[hilit_index].attrib_ptr) = items[hilit_index].MIN;
+	}
+	else
+	  *(items[hilit_index].attrib_ptr) -= 10;
+      }
+
+      else
+      */
       --*(items[hilit_index].attrib_ptr);
       items[hilit_index].wasDecd = clock.getElapsedTime();
     }
   }
   else if (event.key.code == sf::Keyboard::Right) {
     if (*(items[hilit_index].attrib_ptr) < items[hilit_index].MAX) {
+      /* Somehow causes segfault
+      if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) || sf::Keyboard::isKeyPressed(sf::Keyboard::RShift)) {
+	if(*(items[hilit_index].attrib_ptr) + 10 >= items[hilit_index].MAX)
+	  *(items[hilit_index].attrib_ptr) = items[hilit_index].MAX;
+	else
+	  *(items[hilit_index].attrib_ptr) += 10;
+      }
+      else
+      */
       ++*(items[hilit_index].attrib_ptr);
       items[hilit_index].wasIncd = clock.getElapsedTime();
     }
@@ -156,15 +181,23 @@ void ModMenu::draw(sf::RenderWindow& window) {
 // Delete the added pointer when done
 void shape_adder1(std::vector<sf::Shape*>& shapes) {
   int r = std::rand() % 10;
+  if(shape_type >=0 && shape_type <= 9)
+    r = shape_type;
+  
   sf::Shape* s;
-
+  sf::Color fill_color(std::rand()%256,
+		       std::rand()%256,
+		       std::rand()%256);
+  sf::Color outline_color(std::rand()%256,
+			  std::rand()%256,
+			  std::rand()%256);
   // Create a circle
   if (r == 0) {
     s = new sf::CircleShape(std::rand() % 50 + size_modder);
     s->setPosition(std::rand() % 1280, std::rand() % 720);
-    s->setFillColor(sf::Color(std::rand()%255,std::rand()%255,std::rand()%255));
+    s->setFillColor(fill_color);
     s->setOutlineThickness(std::rand() % 15 + border_mod);
-    s->setOutlineColor(sf::Color(std::rand()%255,std::rand()%255,std::rand()%255));
+    s->setOutlineColor(outline_color);
     // Rotate to change the origin point
     // so circles shrink into a random direction
     s->rotate(std::rand() % 360);
@@ -175,9 +208,9 @@ void shape_adder1(std::vector<sf::Shape*>& shapes) {
     s = new sf::RectangleShape(sf::Vector2f(std::rand() % 75 + size_modder,
 					    std::rand() % 75 + size_modder));
     s->setPosition(std::rand() % 1280, std::rand() % 720);
-    s->setFillColor(sf::Color(std::rand()%255,std::rand()%255,std::rand()%255));
+    s->setFillColor(fill_color);
     s->setOutlineThickness(std::rand() % 15 + border_mod);
-    s->setOutlineColor(sf::Color(std::rand()%255,std::rand()%255,std::rand()%255));
+    s->setOutlineColor(outline_color);
     s->rotate(std::rand() % 360);
     shapes.push_back(s);
   }
@@ -185,9 +218,9 @@ void shape_adder1(std::vector<sf::Shape*>& shapes) {
   else {
     s = new sf::CircleShape(std::rand() % 50 + size_modder, r+1);
     s->setPosition(std::rand() % 1280, std::rand() % 720);
-    s->setFillColor(sf::Color(std::rand()%255,std::rand()%255,std::rand()%255));
+    s->setFillColor(fill_color);
     s->setOutlineThickness(std::rand() % 15 + border_mod);
-    s->setOutlineColor(sf::Color(std::rand()%255,std::rand()%255,std::rand()%255));
+    s->setOutlineColor(outline_color);
     s->rotate(std::rand() % 360);
     shapes.push_back(s);
   }
@@ -219,7 +252,8 @@ int main(int argc, char** argv) {
   mod_menu.addItem("Size Mod", &size_modder, -25, 99999);
   mod_menu.addItem("Border Mod", &border_mod, -8, 99999);
   mod_menu.addItem("Rotation Mod", &rotation_mod, 1, 20);
-  
+  mod_menu.addItem("Shape Type", &shape_type, -1, 9);
+
   // Main loop
   while(window.isOpen()) {
     // Input and event handling
